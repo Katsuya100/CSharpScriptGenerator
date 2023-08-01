@@ -1,0 +1,16 @@
+{
+  "name": "com.katuusagi.csharpscriptgenerator",
+  "displayName": "CSharpScriptGenerator",
+  "description": "A library for generating C# scripts.",
+  "version": "1.0.0",
+  "unity": "2021.3",
+  "keywords": [
+    "script"
+  ],
+  "author": {
+    "name": "Katuusagi a.k.a Katsuya100"
+  },
+  "documentationUrl": "https://github.com/Katsuya100/CSharpScriptGenerator",
+  "changelogUrl": "https://github.com/Katsuya100/CSharpScriptGenerator/releases",
+  "licensesUrl": "https://github.com/Katsuya100/CSharpScriptGenerator/blob/v1.0.0/LICENSE"
+}
