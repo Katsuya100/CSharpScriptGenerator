@@ -1,6 +1,6 @@
 using System;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class PropertyMethodGenerator
     {

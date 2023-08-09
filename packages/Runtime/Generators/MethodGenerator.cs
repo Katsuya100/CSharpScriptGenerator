@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class MethodGenerator
     {
-        public List<MethodData> Result { get; private set; } = new();
+        public List<MethodData> Result { get; private set; } = new List<MethodData>();
 
         public void Generate(ModifierType modifier, string type, string name, Action<Children> scope)
         {

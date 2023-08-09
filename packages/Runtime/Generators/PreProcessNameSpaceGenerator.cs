@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
-    public class PreProcessGenerator
+    public class PreProcessNameSpaceGenerator
     {
-        public List<PreProcessData> Result { get; private set; } = new();
+        public List<PreProcessData> Result { get; private set; } = new List<PreProcessData>();
 
         public void Generate(Action<Children> scope)
         {
@@ -16,12 +16,9 @@ namespace Katuusagi.ScriptGenerator
         {
             var gen = new Children()
             {
-                PreProcess = new PreProcessGenerator(),
+                PreProcess = new PreProcessNameSpaceGenerator(),
                 Using = new UsingGenerator(),
                 Namespace = new NamespaceGenerator(),
-                Field = new FieldGenerator(),
-                Property = new PropertyGenerator(),
-                Method = new MethodGenerator(),
                 Type = new TypeGenerator(),
             };
             scope?.Invoke(gen);
@@ -33,9 +30,6 @@ namespace Katuusagi.ScriptGenerator
                 PreProcesses = gen.PreProcess.Result,
                 Usings = gen.Using.Result,
                 Namespaces = gen.Namespace.Result,
-                Fields = gen.Field.Result,
-                Properties = gen.Property.Result,
-                Methods = gen.Method.Result,
                 Types = gen.Type.Result,
             };
             Result.Add(preProcess);
@@ -43,12 +37,9 @@ namespace Katuusagi.ScriptGenerator
 
         public struct Children
         {
-            public PreProcessGenerator PreProcess;
+            public PreProcessNameSpaceGenerator PreProcess;
             public UsingGenerator Using;
             public NamespaceGenerator Namespace;
-            public FieldGenerator Field;
-            public PropertyGenerator Property;
-            public MethodGenerator Method;
             public TypeGenerator Type;
         }
     }

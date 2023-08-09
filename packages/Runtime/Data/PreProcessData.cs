@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class PreProcessData
     {
@@ -13,45 +13,5 @@ namespace Katuusagi.ScriptGenerator
         public List<PropertyData> Properties = new List<PropertyData>();
         public List<MethodData> Methods = new List<MethodData>();
         public List<TypeData> Types = new List<TypeData>();
-
-        public void WriteLine(ScriptBuilder builder)
-        {
-            PreProcesses.WriteLine(builder);
-
-            foreach (var uzing in Usings)
-            {
-                uzing.WriteLine(builder);
-            }
-
-            foreach (var namespase in Namespaces)
-            {
-                namespase.WriteLine(builder);
-            }
-
-            foreach (var field in Fields)
-            {
-                field.WriteLine(builder);
-            }
-
-            foreach (var prop in Properties)
-            {
-                prop.WriteLine(builder);
-            }
-
-            foreach (var method in Methods)
-            {
-                method.WriteLine(builder);
-            }
-
-            foreach (var type in Types)
-            {
-                type.WriteLine(builder);
-            }
-
-            foreach (var type in Types)
-            {
-                type.WriteLine(builder);
-            }
-        }
     }
 }

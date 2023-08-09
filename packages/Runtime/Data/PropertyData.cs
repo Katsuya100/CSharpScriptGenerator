@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class PropertyData
     {
@@ -13,32 +12,5 @@ namespace Katuusagi.ScriptGenerator
         public PropertyMethodData Get = null;
         public PropertyMethodData Set = null;
         public CodeData Default = null;
-
-        public void WriteLine(ScriptBuilder builder)
-        {
-            foreach (var attribute in Attributes)
-            {
-                attribute.WriteLine(builder);
-            }
-            builder.Append(Modifier.GetModifierLabel());
-            builder.Append(Type);
-            builder.Append(" ");
-            builder.Append(Name);
-            Params.WriteIndexer(builder);
-
-            builder.AppendLine();
-
-            builder.StartScope();
-            Get?.WriteLine(builder);
-            Set?.WriteLine(builder);
-            builder.EndScope();
-
-            if (!(Default?.IsEmpty ?? true))
-            {
-                builder.Append(" = ");
-                Default.Write(builder);
-                builder.AppendLine(";");
-            }
-        }
     }
 }

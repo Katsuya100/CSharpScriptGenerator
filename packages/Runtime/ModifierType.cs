@@ -1,6 +1,6 @@
 using System;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     [Flags]
     public enum ModifierType : uint
@@ -24,5 +24,7 @@ namespace Katuusagi.ScriptGenerator
         Const       = 1 << 15,
         Event       = 1 << 16,
         Interface   = 1 << 17,
+        Ref         = 1 << 18,
+        Unsafe      = 1 << 19,
     }
 }

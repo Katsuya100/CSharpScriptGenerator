@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class FieldGenerator
     {
-        public List<FieldData> Result { get; private set; } = new();
+        public List<FieldData> Result { get; private set; } = new List<FieldData>();
 
         public void Generate(ModifierType modifier, string type, string name, string defaultValue)
         {

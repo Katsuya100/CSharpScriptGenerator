@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public static class ScriptGeneratorUtils
     {
@@ -26,6 +22,11 @@ namespace Katuusagi.ScriptGenerator
                 result += "internal ";
             }
 
+            if (modifier.HasFlag(ModifierType.Unsafe))
+            {
+                result += "unsafe ";
+            }
+
             if (modifier.HasFlag(ModifierType.Sealed))
             {
                 result += "sealed ";
@@ -44,6 +45,11 @@ namespace Katuusagi.ScriptGenerator
             if (modifier.HasFlag(ModifierType.ReadOnly))
             {
                 result += "readonly ";
+            }
+
+            if (modifier.HasFlag(ModifierType.Ref))
+            {
+                result += "ref ";
             }
 
             if (modifier.HasFlag(ModifierType.Const))
@@ -71,6 +77,11 @@ namespace Katuusagi.ScriptGenerator
                 result += "event ";
             }
 
+            if (modifier.HasFlag(ModifierType.Record))
+            {
+                result += "record ";
+            }
+
             if (modifier.HasFlag(ModifierType.Class))
             {
                 result += "class ";
@@ -92,120 +103,6 @@ namespace Katuusagi.ScriptGenerator
             }
 
             return result;
-        }
-
-        public static void Write(this List<GenericParameterData> self, ScriptBuilder builder)
-        {
-            if (!self.Any())
-            {
-                return;
-            }
-
-            builder.Append("<");
-            foreach (var param in self)
-            {
-                param.Write(builder);
-                builder.Append(", ");
-            }
-
-            builder.RemoveBack(2);
-            builder.Append(">");
-        }
-
-        public static void Write(this List<ParameterData> self, ScriptBuilder builder)
-        {
-            builder.Append("(");
-            if (self.Any())
-            {
-                foreach (var param in self)
-                {
-                    param.Write(builder);
-                    builder.Append(", ");
-                }
-
-                builder.RemoveBack(2);
-            }
-
-            builder.Append(")");
-        }
-
-        public static void WriteIndexer(this List<ParameterData> self, ScriptBuilder builder)
-        {
-            if (!self.Any())
-            {
-                return;
-            }
-
-            builder.Append("[");
-            foreach (var param in self)
-            {
-                param.Write(builder);
-                builder.Append(", ");
-            }
-
-            builder.RemoveBack(2);
-            builder.Append("]");
-        }
-
-        public static void WriteLine(this List<PreProcessData> self, ScriptBuilder builder)
-        {
-            if (!self.Any())
-            {
-                return;
-            }
-
-            PreProcessData prev = null;
-            for (int i = 0; i < self.Count; ++i)
-            {
-                var current = self[i];
-
-                var currentType = current.PreProcessType;
-                if (prev == null)
-                {
-                    currentType = PreProcessType.If;
-                }
-
-                var existSymbol = !string.IsNullOrEmpty(current.Symbol);
-                switch (currentType)
-                {
-                    case PreProcessType.If:
-                        {
-                            if (!existSymbol)
-                            {
-                                continue;
-                            }
-
-                            builder.AppendLine($"#if {current.Symbol}");
-                        }
-                        break;
-                    case PreProcessType.ElseIf:
-                        {
-                            if (existSymbol)
-                            {
-                                builder.AppendLine($"#elif {current.Symbol}");
-                            }
-                            else
-                            {
-                                builder.AppendLine($"#else");
-                            }
-                        }
-                        break;
-                }
-
-                current.WriteLine(builder);
-
-                var nextType = i + 1 < self.Count ? self[i + 1].PreProcessType : PreProcessType.If;
-                if (nextType == PreProcessType.If ||
-                    (currentType == PreProcessType.ElseIf && !existSymbol))
-                {
-                    builder.AppendLine($"#endif");
-                    prev = null;
-                }
-                else
-                {
-                    prev = current;
-                }
-            }
         }
     }
 }

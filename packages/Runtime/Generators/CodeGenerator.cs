@@ -1,10 +1,10 @@
 using System;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class CodeGenerator
     {
-        public CodeData Result { get; private set; } = new();
+        public CodeData Result { get; private set; } = new CodeData();
         private string _indent = "";
 
         public void Generate(string line)

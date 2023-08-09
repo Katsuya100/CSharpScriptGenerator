@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class GenericParameterGenerator
     {
-        public List<GenericParameterData> Result { get; private set; } = new();
+        public List<GenericParameterData> Result { get; private set; } = new List<GenericParameterData>();
 
         public void Generate(string name, Action<Children> scope = null)
         {

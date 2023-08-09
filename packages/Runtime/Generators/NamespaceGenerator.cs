@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class NamespaceGenerator
     {
-        public List<NamespaceData> Result { get; private set; } = new();
+        public List<NamespaceData> Result { get; private set; } = new List<NamespaceData>();
 
         public void Generate(string name, Action<Children> scope)
         {
             var gen = new Children()
             {
-                PreProcess = new PreProcessGenerator(),
+                PreProcess = new PreProcessNameSpaceGenerator(),
                 Using = new UsingGenerator(),
                 Namespace = new NamespaceGenerator(),
                 Type = new TypeGenerator(),
@@ -31,7 +31,7 @@ namespace Katuusagi.ScriptGenerator
 
         public struct Children
         {
-            public PreProcessGenerator PreProcess;
+            public PreProcessNameSpaceGenerator PreProcess;
             public UsingGenerator Using;
             public NamespaceGenerator Namespace;
             public TypeGenerator Type;

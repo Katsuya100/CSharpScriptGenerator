@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class WhereGenerator
     {
-        public List<WhereData> Result { get; private set; } = new();
+        public List<WhereData> Result { get; private set; } = new List<WhereData>();
 
         public void Generate(string where)
         {

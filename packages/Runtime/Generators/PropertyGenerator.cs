@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class PropertyGenerator
     {
-        public List<PropertyData> Result { get; private set; } = new();
+        public List<PropertyData> Result { get; private set; } = new List<PropertyData>();
 
         public void Generate(ModifierType modifier, string type, string name, string defaultValue = "")
         {

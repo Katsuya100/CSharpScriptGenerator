@@ -49,13 +49,13 @@ root.Generate(rg =>
     });
 });
 
-var builder = new ScriptBuilder();
-root.Result.WriteLine(builder);
+var builder = new CSharpScriptBuilder();
+builder.BuildAndNewLine(root.Result);
 var script = builder.ToString();
 File.WriteAllText("HelloWorld.cs", script);
 ```
 #### Result
-```.cs
+```HelloWorld.cs
 using UnityEngine;
 namespace Example.NameSpace
 {

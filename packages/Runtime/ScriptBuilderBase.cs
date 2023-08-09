@@ -1,13 +1,18 @@
 using System.Text;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
-    public class ScriptBuilder
+    public abstract class ScriptBuilderBase
     {
         private StringBuilder _builder = new StringBuilder();
         private int _indent = 0;
 
-        public void Append(string str)
+        public override string ToString()
+        {
+            return _builder.ToString();
+        }
+
+        protected void Append(string str)
         {
             if (_builder.Length > 0 &&
                 _builder[_builder.Length - 1] == '\n')
@@ -21,7 +26,7 @@ namespace Katuusagi.ScriptGenerator
             _builder.Append(str);
         }
 
-        public void AppendLine(string str = "")
+        protected void AppendLine(string str = "")
         {
             if (_builder.Length > 0 &&
                 _builder[_builder.Length - 1] == '\n')
@@ -35,36 +40,31 @@ namespace Katuusagi.ScriptGenerator
             _builder.AppendLine(str);
         }
 
-        public void RemoveBack(int count)
+        protected void RemoveBack(int count)
         {
             _builder = _builder.Remove(_builder.Length - count, count);
         }
 
-        public void StartScope()
+        protected virtual void StartScope()
         {
             AppendLine("{");
             IncrementIndent();
         }
 
-        public void EndScope()
+        protected virtual void EndScope()
         {
             DecrementIndent();
             AppendLine("}");
         }
 
-        public void IncrementIndent()
+        protected void IncrementIndent()
         {
             ++_indent;
         }
 
-        public void DecrementIndent()
+        protected void DecrementIndent()
         {
             --_indent;
-        }
-
-        public override string ToString()
-        {
-            return _builder.ToString();
         }
     }
 }

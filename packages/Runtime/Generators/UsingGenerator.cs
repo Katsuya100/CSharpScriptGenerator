@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class UsingGenerator
     {
-        public List<UsingData> Result { get; private set; } = new ();
+        public List<UsingData> Result { get; private set; } = new List<UsingData>();
 
         public void Generate(string namespase)
         {

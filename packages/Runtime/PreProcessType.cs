@@ -1,4 +1,4 @@
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public enum PreProcessType : uint
     {

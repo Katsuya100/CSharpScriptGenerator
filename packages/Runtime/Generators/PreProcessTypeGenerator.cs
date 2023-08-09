@@ -3,18 +3,20 @@ using System.Collections.Generic;
 
 namespace Katuusagi.CSharpScriptGenerator
 {
-    public class TypeGenerator
+    public class PreProcessTypeGenerator
     {
-        public List<TypeData> Result { get; private set; } = new List<TypeData>();
+        public List<PreProcessData> Result { get; private set; } = new List<PreProcessData>();
 
-        public void Generate(ModifierType modifier, string name, Action<Children> scope)
+        public void Generate(Action<Children> scope)
+        {
+            Generate(PreProcessType.ElseIf, string.Empty, scope);
+        }
+
+        public void Generate(PreProcessType preProcessType, string symbol, Action<Children> scope)
         {
             var gen = new Children()
             {
                 PreProcess = new PreProcessTypeGenerator(),
-                Attribute = new AttributeGenerator(),
-                GenericParam = new GenericParameterGenerator(),
-                BaseType = new BaseTypeGenerator(),
                 Field = new FieldGenerator(),
                 Property = new PropertyGenerator(),
                 Method = new MethodGenerator(),
@@ -22,28 +24,22 @@ namespace Katuusagi.CSharpScriptGenerator
             };
             scope?.Invoke(gen);
 
-            var type = new TypeData()
+            var preProcess = new PreProcessData()
             {
-                Modifier = modifier,
-                Name = name,
+                PreProcessType = preProcessType,
+                Symbol = symbol,
                 PreProcesses = gen.PreProcess.Result,
-                Attributes = gen.Attribute.Result,
-                GenericParams = gen.GenericParam.Result,
-                BaseTypes = gen.BaseType.Result,
                 Fields = gen.Field.Result,
                 Properties = gen.Property.Result,
                 Methods = gen.Method.Result,
                 Types = gen.Type.Result,
             };
-            Result.Add(type);
+            Result.Add(preProcess);
         }
 
         public struct Children
         {
             public PreProcessTypeGenerator PreProcess;
-            public AttributeGenerator Attribute;
-            public GenericParameterGenerator GenericParam;
-            public BaseTypeGenerator BaseType;
             public FieldGenerator Field;
             public PropertyGenerator Property;
             public MethodGenerator Method;

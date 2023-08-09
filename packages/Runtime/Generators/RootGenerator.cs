@@ -1,16 +1,16 @@
 using System;
 
-namespace Katuusagi.ScriptGenerator
+namespace Katuusagi.CSharpScriptGenerator
 {
     public class RootGenerator
     {
-        public RootData Result { get; private set; } = new ();
+        public RootData Result { get; private set; } = new RootData();
 
         public void Generate(Action<Children> scope)
         {
             var gen = new Children()
             {
-                PreProcess = new PreProcessGenerator(),
+                PreProcess = new PreProcessNameSpaceGenerator(),
                 Using = new UsingGenerator(),
                 Namespace = new NamespaceGenerator(),
                 Type = new TypeGenerator(),
@@ -25,7 +25,7 @@ namespace Katuusagi.ScriptGenerator
 
         public struct Children
         {
-            public PreProcessGenerator PreProcess;
+            public PreProcessNameSpaceGenerator PreProcess;
             public UsingGenerator Using;
             public NamespaceGenerator Namespace;
             public TypeGenerator Type;
