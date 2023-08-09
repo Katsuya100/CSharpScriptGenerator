@@ -7,7 +7,7 @@ UPMに対応しているため、直接Unity内でScript生成に活用しても
 |  環境  |  バージョン  |
 | ---- | ---- |
 | Unity | 2021.3.15f1, 2022.3.2f1 |
-| .Net | 4.x, Standard 2.1 |
+| .Net | 4.x, Standard 2.0, Standard 2.1 |
 
 ## インストール方法
 ### CSharpScriptGeneratorのインストール
