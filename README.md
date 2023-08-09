@@ -9,7 +9,7 @@ Since it supports UPM, you can utilize it directly for script generation in Unit
 |  Environment  |  Version  |
 | ---- | ---- |
 | Unity | 2021.3.15f1, 2022.3.2f1 |
-| .Net | 4.x, Standard 2.1 |
+| .Net | 4.x, Standard 2.0, Standard 2.1 |
 
 ### Installing CSharpScriptGenerator
 1. Open [Window > Package Manager].
