@@ -14,6 +14,8 @@ namespace Katuusagi.CSharpScriptGenerator
                 PreProcess = new PreProcessNameSpaceGenerator(),
                 Using = new UsingGenerator(),
                 Namespace = new NamespaceGenerator(),
+                Delegate = new DelegateGenerator(),
+                Enum = new EnumGenerator(),
                 Type = new TypeGenerator(),
             };
             scope?.Invoke(gen);
@@ -24,6 +26,8 @@ namespace Katuusagi.CSharpScriptGenerator
                 PreProcesses = gen.PreProcess.Result,
                 Usings = gen.Using.Result,
                 Namespaces = gen.Namespace.Result,
+                Delegates = gen.Delegate.Result,
+                Enums = gen.Enum.Result,
                 Types = gen.Type.Result,
             };
             Result.Add(namespase);
@@ -34,6 +38,8 @@ namespace Katuusagi.CSharpScriptGenerator
             public PreProcessNameSpaceGenerator PreProcess;
             public UsingGenerator Using;
             public NamespaceGenerator Namespace;
+            public DelegateGenerator Delegate;
+            public EnumGenerator Enum;
             public TypeGenerator Type;
         }
     }

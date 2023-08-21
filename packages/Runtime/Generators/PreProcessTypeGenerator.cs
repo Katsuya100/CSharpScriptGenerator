@@ -17,9 +17,12 @@ namespace Katuusagi.CSharpScriptGenerator
             var gen = new Children()
             {
                 PreProcess = new PreProcessTypeGenerator(),
+                Event = new EventGenerator(),
                 Field = new FieldGenerator(),
                 Property = new PropertyGenerator(),
                 Method = new MethodGenerator(),
+                Delegate = new DelegateGenerator(),
+                Enum = new EnumGenerator(),
                 Type = new TypeGenerator(),
             };
             scope?.Invoke(gen);
@@ -29,9 +32,12 @@ namespace Katuusagi.CSharpScriptGenerator
                 PreProcessType = preProcessType,
                 Symbol = symbol,
                 PreProcesses = gen.PreProcess.Result,
+                Events = gen.Event.Result,
                 Fields = gen.Field.Result,
                 Properties = gen.Property.Result,
                 Methods = gen.Method.Result,
+                Delegates = gen.Delegate.Result,
+                Enums = gen.Enum.Result,
                 Types = gen.Type.Result,
             };
             Result.Add(preProcess);
@@ -40,9 +46,12 @@ namespace Katuusagi.CSharpScriptGenerator
         public struct Children
         {
             public PreProcessTypeGenerator PreProcess;
+            public EventGenerator Event;
             public FieldGenerator Field;
             public PropertyGenerator Property;
             public MethodGenerator Method;
+            public DelegateGenerator Delegate;
+            public EnumGenerator Enum;
             public TypeGenerator Type;
         }
     }

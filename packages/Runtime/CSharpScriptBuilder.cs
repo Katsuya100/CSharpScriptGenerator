@@ -5,6 +5,20 @@ namespace Katuusagi.CSharpScriptGenerator
 {
     public class CSharpScriptBuilder : ScriptBuilderBase
     {
+        private const ModifierType AccessorModifier = ModifierType.Private | ModifierType.Protected | ModifierType.Public | ModifierType.Internal;
+
+        private const ModifierType ClassAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Partial | ModifierType.Sealed | ModifierType.Abstract | ModifierType.Record | ModifierType.Class;
+        private const ModifierType StructAllowedModifier = AccessorModifier | ModifierType.Partial | ModifierType.ReadOnly | ModifierType.Ref | ModifierType.Record | ModifierType.Struct;
+        private const ModifierType InterfaceAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Partial | ModifierType.Interface;
+        private const ModifierType DelegateAllowedModifier = AccessorModifier | ModifierType.Unsafe;
+        private const ModifierType EnumAllowedModifier = AccessorModifier;
+
+        private const ModifierType EventAllowedModifier = AccessorModifier | ModifierType.Static;
+        private const ModifierType FieldAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Const;
+        private const ModifierType PropertyAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Virtual | ModifierType.Abstract | ModifierType.Override;
+        private const ModifierType PropertyMethodAllowedModifier = AccessorModifier;
+        private const ModifierType MethodAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Partial | ModifierType.Sealed | ModifierType.Virtual | ModifierType.Abstract | ModifierType.Override;
+
         public void BuildAndNewLine(RootData data)
         {
             if (data == null)
@@ -12,7 +26,7 @@ namespace Katuusagi.CSharpScriptGenerator
                 return;
             }
 
-            BuildAndNewLine(data.PreProcesses);
+            BuildAndNewLine(data.PreProcesses, null, false);
 
             foreach (var uzing in data.Usings)
             {
@@ -22,6 +36,16 @@ namespace Katuusagi.CSharpScriptGenerator
             foreach (var namespase in data.Namespaces)
             {
                 BuildAndNewLine(namespase);
+            }
+
+            foreach (var del in data.Delegates)
+            {
+                BuildAndNewLine(del);
+            }
+
+            foreach (var enu in data.Enums)
+            {
+                BuildAndNewLine(enu);
             }
 
             foreach (var type in data.Types)
@@ -30,14 +54,14 @@ namespace Katuusagi.CSharpScriptGenerator
             }
         }
 
-        public void BuildAndNewLine(PreProcessData data)
+        public void BuildAndNewLine(PreProcessData data, string parentName, bool isStructMember)
         {
             if (data == null)
             {
                 return;
             }
 
-            BuildAndNewLine(data.PreProcesses);
+            BuildAndNewLine(data.PreProcesses, parentName, isStructMember);
 
             foreach (var uzing in data.Usings)
             {
@@ -49,9 +73,14 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(namespase);
             }
 
+            foreach (var eve in data.Events)
+            {
+                BuildAndNewLine(eve);
+            }
+
             foreach (var field in data.Fields)
             {
-                BuildAndNewLine(field);
+                BuildAndNewLine(field, !isStructMember);
             }
 
             foreach (var property in data.Properties)
@@ -61,7 +90,28 @@ namespace Katuusagi.CSharpScriptGenerator
 
             foreach (var method in data.Methods)
             {
-                BuildAndNewLine(method);
+                if (method.Name == parentName && isStructMember)
+                {
+                    BuildAndNewLine(method, data.Fields);
+                    continue;
+                }
+
+                BuildAndNewLine(method, null);
+            }
+
+            foreach (var enumValue in data.EnumValues)
+            {
+                BuildAndNewLine(enumValue);
+            }
+
+            foreach (var del in data.Delegates)
+            {
+                BuildAndNewLine(del);
+            }
+
+            foreach (var enu in data.Enums)
+            {
+                BuildAndNewLine(enu);
             }
 
             foreach (var type in data.Types)
@@ -94,7 +144,7 @@ namespace Katuusagi.CSharpScriptGenerator
             AppendLine(data.Name);
             StartScope();
 
-            BuildAndNewLine(data.PreProcesses);
+            BuildAndNewLine(data.PreProcesses, data.Name, false);
 
             foreach (var uzing in data.Usings)
             {
@@ -106,6 +156,16 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(namespase);
             }
 
+            foreach (var del in data.Delegates)
+            {
+                BuildAndNewLine(del);
+            }
+
+            foreach (var enu in data.Enums)
+            {
+                BuildAndNewLine(enu);
+            }
+
             foreach (var type in data.Types)
             {
                 BuildAndNewLine(type);
@@ -114,15 +174,102 @@ namespace Katuusagi.CSharpScriptGenerator
             EndScope();
         }
 
-        public void BuildAndNewLine(TypeData data)
+        public void BuildAndNewLine(DelegateData data)
         {
             if (data == null)
             {
                 return;
             }
 
-            var isPartialStruct = data.Modifier.HasFlag(ModifierType.Struct) && data.Modifier.HasFlag(ModifierType.Partial);
-            if (isPartialStruct)
+            foreach (var attribute in data.Attributes)
+            {
+                BuildAndNewLine(attribute);
+            }
+
+            var mod = data.Modifier & DelegateAllowedModifier;
+            Append(mod.GetModifierLabel());
+            Append("delegate ");
+            Append(data.Type);
+            if (!string.IsNullOrEmpty(data.Type))
+            {
+                Append(" ");
+            }
+            Append(data.Name);
+
+            Build(data.GenericParams);
+            Build(data.Params);
+            AppendLine(";");
+        }
+
+        public void BuildAndNewLine(EnumData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            foreach (var attribute in data.Attributes)
+            {
+                BuildAndNewLine(attribute);
+            }
+
+            var mod = data.Modifier & EnumAllowedModifier;
+            Append(mod.GetModifierLabel());
+            Append("enum ");
+            Append(data.Name);
+            if (data.BaseTypes.Any())
+            {
+                Append(":");
+                Build(data.BaseTypes.First());
+            }
+
+            AppendLine();
+
+            StartScope();
+
+            BuildAndNewLine(data.PreProcesses, data.Name, false);
+
+            foreach (var enumValue in data.EnumValues)
+            {
+                BuildAndNewLine(enumValue);
+            }
+
+            EndScope();
+        }
+
+        public void BuildAndNewLine(EnumValueData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            foreach (var attribute in data.Attributes)
+            {
+                BuildAndNewLine(attribute);
+            }
+
+            Append(data.Name);
+            if (!(data.Default?.IsEmpty ?? true))
+            {
+                Append(" = ");
+                Build(data.Default);
+            }
+
+            AppendLine(",");
+        }
+
+        public void BuildAndNewLine(TypeData data)
+        {
+            if (data == null)
+            {
+                return;
+            }
+            var isClass = data.Modifier.HasFlag(ModifierType.Class);
+            var isStruct = !isClass && data.Modifier.HasFlag(ModifierType.Struct);
+            var isInterface = !isClass && !isStruct && data.Modifier.HasFlag(ModifierType.Struct);
+            var isPartial = data.Modifier.HasFlag(ModifierType.Partial);
+            if (isPartial && isStruct)
             {
                 AppendLine("#pragma warning disable CS0282");
             }
@@ -132,7 +279,21 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(attribute);
             }
 
-            Append(data.Modifier.GetModifierLabel());
+            var mod = data.Modifier;
+            if (isClass)
+            {
+                mod &= ClassAllowedModifier;
+            }
+            else if (isStruct)
+            {
+                mod &= StructAllowedModifier;
+            }
+            else if (isInterface)
+            {
+                mod &= InterfaceAllowedModifier;
+            }
+
+            Append(mod.GetModifierLabel());
             Append(data.Name);
             Build(data.GenericParams);
             if (data.BaseTypes.Any())
@@ -154,18 +315,23 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLineWhere(genericParam);
             }
 
-            if (isPartialStruct)
+            if (isPartial && isStruct)
             {
                 AppendLine("#pragma warning restore CS0282");
             }
 
             StartScope();
 
-            BuildAndNewLine(data.PreProcesses);
+            BuildAndNewLine(data.PreProcesses, data.Name, isStruct);
+
+            foreach (var eve in data.Events)
+            {
+                BuildAndNewLine(eve);
+            }
 
             foreach (var field in data.Fields)
             {
-                BuildAndNewLine(field);
+                BuildAndNewLine(field, !isStruct);
             }
 
             foreach (var prop in data.Properties)
@@ -175,7 +341,23 @@ namespace Katuusagi.CSharpScriptGenerator
 
             foreach (var method in data.Methods)
             {
-                BuildAndNewLine(method);
+                if (method.Name == data.Name && isStruct)
+                {
+                    BuildAndNewLine(method, data.Fields);
+                    continue;
+                }
+
+                BuildAndNewLine(method, null);
+            }
+
+            foreach (var del in data.Delegates)
+            {
+                BuildAndNewLine(del);
+            }
+
+            foreach (var enu in data.Enums)
+            {
+                BuildAndNewLine(enu);
             }
 
             foreach (var type in data.Types)
@@ -265,7 +447,7 @@ namespace Katuusagi.CSharpScriptGenerator
             }
         }
 
-        public void BuildAndNewLine(FieldData data)
+        public void BuildAndNewLine(EventData data)
         {
             if (data == null)
             {
@@ -277,11 +459,40 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(attribute);
             }
 
-            Append(data.Modifier.GetModifierLabel());
+            var mod = data.Modifier & EventAllowedModifier;
+            Append(mod.GetModifierLabel());
+            Append("event ");
             Append(data.Type);
             Append(" ");
             Append(data.Name);
             if (!(data.Default?.IsEmpty ?? true))
+            {
+                Append(" = ");
+                Build(data.Default);
+            }
+
+            AppendLine(";");
+        }
+
+        public void BuildAndNewLine(FieldData data, bool enableDefaultValue)
+        {
+            if (data == null)
+            {
+                return;
+            }
+
+            foreach (var attribute in data.Attributes)
+            {
+                BuildAndNewLine(attribute);
+            }
+
+            var mod = data.Modifier & FieldAllowedModifier;
+            Append(mod.GetModifierLabel());
+            Append(data.Type);
+            Append(" ");
+            Append(data.Name);
+            if (enableDefaultValue &&
+                !(data.Default?.IsEmpty ?? true))
             {
                 Append(" = ");
                 Build(data.Default);
@@ -302,7 +513,8 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(attribute);
             }
 
-            Append(data.Modifier.GetModifierLabel());
+            var mod = data.Modifier & PropertyAllowedModifier;
+            Append(mod.GetModifierLabel());
             Append(data.Type);
             Append(" ");
             Append(data.Name);
@@ -334,7 +546,9 @@ namespace Katuusagi.CSharpScriptGenerator
             {
                 BuildAndNewLine(attribute);
             }
-            Append(data.Modifier.GetModifierLabel());
+
+            var mod = data.Modifier & PropertyMethodAllowedModifier;
+            Append(mod.GetModifierLabel());
             Append(data.Name);
 
             if (!(data.Code?.IsEmpty ?? true))
@@ -350,7 +564,7 @@ namespace Katuusagi.CSharpScriptGenerator
             }
         }
 
-        public void BuildAndNewLine(MethodData data)
+        public void BuildAndNewLine(MethodData data, IEnumerable<FieldData> initFields)
         {
             if (data == null)
             {
@@ -362,7 +576,8 @@ namespace Katuusagi.CSharpScriptGenerator
                 BuildAndNewLine(attribute);
             }
 
-            Append(data.Modifier.GetModifierLabel());
+            var mod = data.Modifier & MethodAllowedModifier;
+            Append(mod.GetModifierLabel());
             Append(data.Type);
             if (!string.IsNullOrEmpty(data.Type))
             {
@@ -374,8 +589,8 @@ namespace Katuusagi.CSharpScriptGenerator
             Build(data.Params);
 
             if ((!data.Code?.IsEmpty ?? true) ||
-                (data.Modifier != ModifierType.None &&
-                !data.Modifier.HasFlag(ModifierType.Abstract)))
+                (mod != ModifierType.None &&
+                !mod.HasFlag(ModifierType.Abstract)))
             {
                 AppendLine(string.Empty);
                 foreach (var genericParam in data.GenericParams)
@@ -383,6 +598,18 @@ namespace Katuusagi.CSharpScriptGenerator
                     BuildAndNewLineWhere(genericParam);
                 }
                 StartScope();
+                if (initFields != null)
+                {
+                    foreach (var initField in initFields)
+                    {
+                        if (initField.Default?.IsEmpty ?? false)
+                        {
+                            continue;
+                        }
+
+                        AppendLine($"{initField.Name} = {initField.Default.Lines.FirstOrDefault()};");
+                    }
+                }
                 BuildAndNewLine(data.Code);
                 EndScope();
             }
@@ -496,7 +723,7 @@ namespace Katuusagi.CSharpScriptGenerator
             Append("]");
         }
 
-        public void BuildAndNewLine(List<PreProcessData> data)
+        public void BuildAndNewLine(List<PreProcessData> data, string parentName, bool isStructMember)
         {
             if (data == null ||
                 !data.Any())
@@ -542,7 +769,7 @@ namespace Katuusagi.CSharpScriptGenerator
                         break;
                 }
 
-                BuildAndNewLine(current);
+                BuildAndNewLine(current, parentName, !isStructMember);
 
                 var nextType = i + 1 < data.Count ? data[i + 1].PreProcessType : PreProcessType.If;
                 if (nextType == PreProcessType.If ||

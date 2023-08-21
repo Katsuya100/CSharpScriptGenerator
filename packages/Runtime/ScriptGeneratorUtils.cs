@@ -57,24 +57,17 @@ namespace Katuusagi.CSharpScriptGenerator
                 result += "const ";
             }
 
-            if (modifier.HasFlag(ModifierType.Virtual))
-            {
-                result += "virtual ";
-            }
-
             if (modifier.HasFlag(ModifierType.Abstract))
             {
                 result += "abstract ";
             }
-
-            if (modifier.HasFlag(ModifierType.Override))
+            else if (modifier.HasFlag(ModifierType.Virtual))
+            {
+                result += "virtual ";
+            }
+            else if (modifier.HasFlag(ModifierType.Override))
             {
                 result += "override ";
-            }
-
-            if (modifier.HasFlag(ModifierType.Event))
-            {
-                result += "event ";
             }
 
             if (modifier.HasFlag(ModifierType.Record))
@@ -86,18 +79,11 @@ namespace Katuusagi.CSharpScriptGenerator
             {
                 result += "class ";
             }
-
-            if (modifier.HasFlag(ModifierType.Struct))
+            else if (modifier.HasFlag(ModifierType.Struct))
             {
                 result += "struct ";
             }
-
-            if (modifier.HasFlag(ModifierType.Enum))
-            {
-                result += "enum ";
-            }
-
-            if (modifier.HasFlag(ModifierType.Interface))
+            else if (modifier.HasFlag(ModifierType.Interface))
             {
                 result += "interface ";
             }

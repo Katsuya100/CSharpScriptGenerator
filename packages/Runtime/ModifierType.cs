@@ -19,12 +19,10 @@ namespace Katuusagi.CSharpScriptGenerator
         Class       = 1 << 10,
         Struct      = 1 << 11,
         Record      = 1 << 12,
-        Enum        = 1 << 13,
-        ReadOnly    = 1 << 14,
-        Const       = 1 << 15,
-        Event       = 1 << 16,
-        Interface   = 1 << 17,
-        Ref         = 1 << 18,
-        Unsafe      = 1 << 19,
+        Interface   = 1 << 13,
+        Const       = 1 << 14,
+        ReadOnly    = 1 << 15,
+        Ref         = 1 << 16,
+        Unsafe      = 1 << 17,
     }
 }
