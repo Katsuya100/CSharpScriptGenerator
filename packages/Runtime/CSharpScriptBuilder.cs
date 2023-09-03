@@ -481,6 +481,11 @@ namespace Katuusagi.CSharpScriptGenerator
                 return;
             }
 
+            if (data.Modifier.HasFlag(ModifierType.Static))
+            {
+                enableDefaultValue = true;
+            }
+
             foreach (var attribute in data.Attributes)
             {
                 BuildAndNewLine(attribute);
