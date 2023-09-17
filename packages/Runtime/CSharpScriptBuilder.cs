@@ -664,9 +664,12 @@ namespace Katuusagi.CSharpScriptGenerator
             Build(data.GenericParams);
             Build(data.Params);
 
-            if (data.Statements.Any() ||
-                (mod != ModifierType.None &&
-                !mod.HasFlag(ModifierType.Abstract)))
+            if (!data.Statements.Any() &&
+                (mod.HasFlag(ModifierType.Abstract) || mod.HasFlag(ModifierType.Partial)))
+            {
+                AppendLine(";");
+            }
+            else
             {
                 AppendLine(string.Empty);
                 foreach (var genericParam in data.GenericParams)
@@ -696,10 +699,6 @@ namespace Katuusagi.CSharpScriptGenerator
                     BuildAndNewLine(statement);
                 }
                 EndScope();
-            }
-            else
-            {
-                AppendLine(";");
             }
         }
 
