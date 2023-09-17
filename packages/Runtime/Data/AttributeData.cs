@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+
 namespace Katuusagi.CSharpScriptGenerator
 {
     public class AttributeData
     {
-        public string Attribute = string.Empty;
+        public ITypeNameData Type = null;
+        public List<IStatementData> Args = new List<IStatementData>();
     }
 }

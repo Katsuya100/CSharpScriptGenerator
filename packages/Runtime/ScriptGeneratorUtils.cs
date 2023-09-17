@@ -20,11 +20,11 @@ namespace Katuusagi.CSharpScriptGenerator
                     case "public":
                         result |= ModifierType.Public;
                         break;
-                    case "protected":
-                        result |= ModifierType.Protected;
-                        break;
                     case "private":
                         result |= ModifierType.Private;
+                        break;
+                    case "protected":
+                        result |= ModifierType.Protected;
                         break;
                     case "internal":
                         result |= ModifierType.Internal;
@@ -44,11 +44,29 @@ namespace Katuusagi.CSharpScriptGenerator
                     case "readonly":
                         result |= ModifierType.ReadOnly;
                         break;
+                    case "this":
+                        result |= ModifierType.This;
+                        break;
                     case "ref":
                         result |= ModifierType.Ref;
                         break;
+                    case "in":
+                        result |= ModifierType.In;
+                        break;
+                    case "out":
+                        result |= ModifierType.Out;
+                        break;
+                    case "params":
+                        result |= ModifierType.Params;
+                        break;
                     case "const":
                         result |= ModifierType.Const;
+                        break;
+                    case "volatile":
+                        result |= ModifierType.Volatile;
+                        break;
+                    case "extern":
+                        result |= ModifierType.Extern;
                         break;
                     case "abstract":
                         result |= ModifierType.Abstract;
@@ -58,6 +76,9 @@ namespace Katuusagi.CSharpScriptGenerator
                         break;
                     case "override":
                         result |= ModifierType.Override;
+                        break;
+                    case "new":
+                        result |= ModifierType.New;
                         break;
                     case "async":
                         result |= ModifierType.Async;
@@ -132,9 +153,27 @@ namespace Katuusagi.CSharpScriptGenerator
                 result += "readonly ";
             }
 
+            if (modifier.HasFlag(ModifierType.This))
+            {
+                result += "this ";
+            }
+
             if (modifier.HasFlag(ModifierType.Ref))
             {
                 result += "ref ";
+            }
+            else if (modifier.HasFlag(ModifierType.In))
+            {
+                result += "in ";
+            }
+            else if (modifier.HasFlag(ModifierType.Out))
+            {
+                result += "out ";
+            }
+
+            if (modifier.HasFlag(ModifierType.Params))
+            {
+                result += "params ";
             }
 
             if (modifier.HasFlag(ModifierType.Const))
@@ -142,6 +181,15 @@ namespace Katuusagi.CSharpScriptGenerator
                 result += "const ";
             }
 
+            if (modifier.HasFlag(ModifierType.Volatile))
+            {
+                result += "volatile ";
+            }
+
+            if (modifier.HasFlag(ModifierType.Extern))
+            {
+                result += "extern ";
+            }
             if (modifier.HasFlag(ModifierType.Abstract))
             {
                 result += "abstract ";
@@ -154,6 +202,10 @@ namespace Katuusagi.CSharpScriptGenerator
             {
                 result += "override ";
             }
+            else if (modifier.HasFlag(ModifierType.New))
+            {
+                result += "new ";
+            }
 
             if (modifier.HasFlag(ModifierType.Async))
             {
@@ -163,9 +215,16 @@ namespace Katuusagi.CSharpScriptGenerator
             if (modifier.HasFlag(ModifierType.Record))
             {
                 result += "record ";
+                if (modifier.HasFlag(ModifierType.Class))
+                {
+                    result += "class ";
+                }
+                else if (modifier.HasFlag(ModifierType.Struct))
+                {
+                    result += "struct ";
+                }
             }
-
-            if (modifier.HasFlag(ModifierType.Class))
+            else if (modifier.HasFlag(ModifierType.Class))
             {
                 result += "class ";
             }

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Katuusagi.CSharpScriptGenerator
 {
@@ -6,13 +8,35 @@ namespace Katuusagi.CSharpScriptGenerator
     {
         public List<AttributeData> Result { get; private set; } = new List<AttributeData>();
 
-        public void Generate(string attribute)
+        public void Generate(string type)
         {
-            var attr = new AttributeData()
+            Generate(g =>
             {
-                Attribute = attribute
+                g.Type.Generate(type);
+            });
+        }
+
+        public void Generate(Action<Children> scope)
+        {
+            var gen = new Children()
+            {
+                Type = new TypeNameGenerator(),
+                Arg = new StatementGenerator(),
             };
-            Result.Add(attr);
+            scope?.Invoke(gen);
+
+            var data = new AttributeData()
+            {
+                Type = gen.Type.Result.LastOrDefault(),
+                Args = gen.Arg.Result,
+            };
+            Result.Add(data);
+        }
+
+        public struct Children
+        {
+            public TypeNameGenerator Type;
+            public StatementGenerator Arg;
         }
     }
 }

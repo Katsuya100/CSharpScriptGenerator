@@ -40,9 +40,9 @@ root.Generate(rg =>
             {
                 mg.Param.Generate("bool", "check");
 
-                mg.Code.Generate("if (check)", () =>
+                mg.Statement.Generate("if (check)", () =>
                 {
-                    mg.Code.Generate("Debug.Log(\"HelloWorld\")");
+                    mg.Statement.Generate("Debug.Log(\"HelloWorld\");");
                 });
             });
         });
@@ -65,7 +65,7 @@ namespace Example.NameSpace
         {
             if (check)
             {
-                Debug.Log("HelloWorld")
+                Debug.Log("HelloWorld");
             }
         }
     }
