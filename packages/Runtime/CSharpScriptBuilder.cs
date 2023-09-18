@@ -7,18 +7,21 @@ namespace Katuusagi.CSharpScriptGenerator
     {
         private const ModifierType AccessorModifier = ModifierType.Private | ModifierType.Protected | ModifierType.Public | ModifierType.Internal;
 
-        private const ModifierType ClassAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Partial | ModifierType.Sealed | ModifierType.Abstract | ModifierType.Record | ModifierType.Class;
-        private const ModifierType StructAllowedModifier = AccessorModifier | ModifierType.Partial | ModifierType.ReadOnly | ModifierType.Ref | ModifierType.Record | ModifierType.Struct;
+        private const ModifierType ClassAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Static | ModifierType.Abstract| ModifierType.Partial  | ModifierType.Class;
+        private const ModifierType StructAllowedModifier = AccessorModifier | ModifierType.Unsafe| ModifierType.ReadOnly | ModifierType.Ref  | ModifierType.Partial | ModifierType.Struct;
         private const ModifierType InterfaceAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Partial | ModifierType.Interface;
+        private const ModifierType RecordAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Abstract | ModifierType.Partial | ModifierType.Record;
         private const ModifierType DelegateAllowedModifier = AccessorModifier | ModifierType.Unsafe;
         private const ModifierType EnumAllowedModifier = AccessorModifier;
 
-        private const ModifierType EventAllowedModifier = AccessorModifier | ModifierType.Static;
-        private const ModifierType FieldAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Const | ModifierType.Volatile;
-        private const ModifierType PropertyAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Virtual | ModifierType.Abstract | ModifierType.Override | ModifierType.New;
+        private const ModifierType EventAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Static | ModifierType.Extern | ModifierType.Abstract | ModifierType.Virtual | ModifierType.Override | ModifierType.New;
+        private const ModifierType FieldAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Static | ModifierType.Const | ModifierType.Volatile | ModifierType.New | ModifierType.ReadOnly;
+        private const ModifierType PropertyAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Static | ModifierType.Extern | ModifierType.Abstract | ModifierType.Virtual | ModifierType.Override | ModifierType.New | ModifierType.ReadOnly | ModifierType.Ref | ModifierType.ReturnReadOnly;
         private const ModifierType PropertyMethodAllowedModifier = AccessorModifier;
-        private const ModifierType MethodAllowedModifier = AccessorModifier | ModifierType.Static | ModifierType.Unsafe | ModifierType.Extern | ModifierType.Partial | ModifierType.Sealed | ModifierType.Virtual | ModifierType.Abstract | ModifierType.Override | ModifierType.New | ModifierType.Async;
+        private const ModifierType MethodAllowedModifier = AccessorModifier | ModifierType.Unsafe | ModifierType.Sealed | ModifierType.Static| ModifierType.Extern | ModifierType.Abstract | ModifierType.Virtual | ModifierType.Override | ModifierType.New | ModifierType.Async | ModifierType.ReadOnly | ModifierType.Partial;
 
+        private const ModifierType DelegateReturnAllowedModifier = ModifierType.Ref | ModifierType.ReturnReadOnly;
+        private const ModifierType MethodReturnAllowedModifier = ModifierType.Ref | ModifierType.ReturnReadOnly;
         private const ModifierType ParameterAllowedModifier = ModifierType.This | ModifierType.Ref | ModifierType.In | ModifierType.Out | ModifierType.Params;
         private const ModifierType GenericParameterAllowedModifier = ModifierType.In | ModifierType.Out;
 
@@ -195,6 +198,8 @@ namespace Katuusagi.CSharpScriptGenerator
             var mod = data.Modifier & DelegateAllowedModifier;
             Append(mod.GetModifierLabel());
             Append("delegate ");
+            mod = data.Modifier & DelegateReturnAllowedModifier;
+            Append(mod.GetModifierLabel());
             Build(data.ReturnType);
             Append(data.Name);
 
@@ -292,6 +297,7 @@ namespace Katuusagi.CSharpScriptGenerator
             var isClass = data.Modifier.HasFlag(ModifierType.Class);
             var isStruct = !isClass && data.Modifier.HasFlag(ModifierType.Struct);
             var isInterface = !isClass && !isStruct && data.Modifier.HasFlag(ModifierType.Struct);
+            var isRecord = !isClass && !isStruct && !isInterface && data.Modifier.HasFlag(ModifierType.Record);
             var isPartial = data.Modifier.HasFlag(ModifierType.Partial);
             if (isPartial && isStruct)
             {
@@ -315,6 +321,10 @@ namespace Katuusagi.CSharpScriptGenerator
             else if (isInterface)
             {
                 mod &= InterfaceAllowedModifier;
+            }
+            else if (isRecord)
+            {
+                mod &= RecordAllowedModifier;
             }
 
             Append(mod.GetModifierLabel());
@@ -658,14 +668,16 @@ namespace Katuusagi.CSharpScriptGenerator
 
             var mod = data.Modifier & MethodAllowedModifier;
             Append(mod.GetModifierLabel());
+            mod = data.Modifier & MethodReturnAllowedModifier;
+            Append(mod.GetModifierLabel());
             Build(data.ReturnType);
             Append(data.Name);
 
             Build(data.GenericParams);
             Build(data.Params);
-
-            if (!data.Statements.Any() &&
-                (mod.HasFlag(ModifierType.Abstract) || mod.HasFlag(ModifierType.Partial)))
+            if (data.Modifier.HasFlag(ModifierType.Abstract) ||
+                data.Modifier.HasFlag(ModifierType.Extern) ||
+                (!data.Statements.Any() && data.Modifier.HasFlag(ModifierType.Partial)))
             {
                 AppendLine(";");
             }
